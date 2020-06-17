@@ -52,7 +52,7 @@ router.get("/fav_characters", isAuthenticated, async (req, res) => {
 });
 
 
-//affiche favoris characters
+//tableau d'id
 router.get("/fav_characters/by_id", isAuthenticated, async (req, res) => {
   try {
     if (req.user) {
@@ -109,6 +109,26 @@ router.get("/fav_comics", isAuthenticated, async (req, res) => {
       const f = await Favorite.findOne({ creator: req.user._id });
 
       if (f) return res.status(200).json(f.fav_comics);
+      else return res.status(404).json({ error: "Favorite not found" });
+    } else return res.status(401).json({ error: "User unauthorized" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+
+//tableau d'id
+router.get("/fav_comics/by_id", isAuthenticated, async (req, res) => {
+  try {
+    if (req.user) {
+      const f = await Favorite.findOne({ creator: req.user._id });
+      if (f) {
+        let tab = [];
+        for (let i = 0; i < f.fav_comics.length; i++) {
+          tab.push(JSON.stringify(f.fav_comics[i]._id));
+        }
+        return res.status(200).json(tab);
+      }
       else return res.status(404).json({ error: "Favorite not found" });
     } else return res.status(401).json({ error: "User unauthorized" });
   } catch (error) {
