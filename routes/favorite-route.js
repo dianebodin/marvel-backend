@@ -52,6 +52,26 @@ router.get("/fav_characters", isAuthenticated, async (req, res) => {
 });
 
 
+//affiche favoris characters
+router.get("/fav_characters/by_id", isAuthenticated, async (req, res) => {
+  try {
+    if (req.user) {
+      const f = await Favorite.findOne({ creator: req.user._id });
+      if (f) {
+        let tab = [];
+        for (let i = 0; i < f.fav_characters.length; i++) {
+          tab.push(JSON.stringify(f.fav_characters[i]._id));
+        }
+        return res.status(200).json(tab);
+      }
+      else return res.status(404).json({ error: "Favorite not found" });
+    } else return res.status(401).json({ error: "User unauthorized" });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+
 //ajout et suppression favoris comics
 router.put("/favorite/comics", isAuthenticated, async (req, res) => {
   try {
